@@ -5,3 +5,4 @@ JS-API-Tasks
 JS-OOP-Tasks
 Kasper-Template
 Leon-Template
+Mini-Github-CLI
