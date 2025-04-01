@@ -1,4 +1,5 @@
-const fs = require("fs");
+import fs from "fs";
+import { program } from "commander";
 
 const getRepos = async (username) => {
   try {
@@ -13,17 +14,31 @@ const getRepos = async (username) => {
 
     return await response.json();
   } catch (err) {
-    throw new Error("Error fetching repos:", err.message);
+    throw new Error(`Error fetching repos: ${err.message}`);
   }
 };
 
-const username = "AhmedredaG";
-getRepos(username)
-  .then((data) => {
-    const repoNames = data.map((repo) => repo.name).join("\n");
+program
+  .name("Github-Repos")
+  .description("CLI to get github repositories of specific user")
+  .version("1.0.0");
 
-    fs.writeFile(`${username}.txt`, repoNames, (err) => {
-      console.log(err ? err.message : `Data saved in ${username}.txt`);
-    });
-  })
-  .catch((err) => console.log(err));
+program
+  .command("get")
+  .description(
+    "get github repositories of specific user and store there names in the file with the user is username"
+  )
+  .argument("<username>", "string to split")
+  .action(async (username) => {
+    try {
+      const data = await getRepos(username);
+      const repoNames = data.map((repo) => repo.name).join("\n");
+
+      await fs.promises.writeFile(`${username}.txt`, repoNames);
+      console.log(`Data saved in ${username}.txt`);
+    } catch (err) {
+      console.error("Error:", err.message);
+    }
+  });
+
+program.parse();
