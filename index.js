@@ -35,14 +35,20 @@ program
 
 program
   .command("get")
+  .alias("g")
   .description("Fetch GitHub repositories and save their names to a file")
-  .argument("<username>", "string to split")
+  .argument("<username>", "GitHub username")
   .action(async (username) => {
     try {
       const validUsername = validateUsername(username);
       const data = await getRepos(validUsername);
-      const repoNames = data.map((repo) => repo.name).join("\n");
 
+      if (data.length === 0) {
+        console.log(`No repositories found for user ${validUsername}`);
+        return;
+      }
+
+      const repoNames = data.map((repo) => repo.name).join("\n");
       await fs.promises.writeFile(`${validUsername}.txt`, repoNames);
       console.log(`Data saved in ${validUsername}.txt`);
     } catch (err) {
